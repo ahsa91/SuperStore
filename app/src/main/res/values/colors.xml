@@ -11,4 +11,8 @@
     <color name="colorSecondaryText">#989898</color>
 
     <color name="colorWhite">#FFFFFF</color>
+    <color name="blue">#2196F3</color>
+    <color name="trueBlue">#014F8C</color>
+
+
 </resources>

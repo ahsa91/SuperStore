@@ -29,7 +29,7 @@
             android:layout_gravity="center"
             android:contentDescription="@string/app_name"
             android:scaleType="fitCenter"
-            android:src="@drawable/tutorials_eu_logo"
+            android:src="@drawable/superstore_logo"
             app:tint="@color/colorWhite" />
     </FrameLayout>
 
