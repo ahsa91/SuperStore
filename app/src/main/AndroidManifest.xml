@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity
+            android:name=".ui.activities.BaseActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.activities.SplashActivity"
             android:screenOrientation="portrait"
@@ -30,7 +32,7 @@
         <activity
             android:name=".ui.activities.RegisterActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

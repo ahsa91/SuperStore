@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
             // Launch the register screen when the user clicks on the text.
             val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
             startActivity(intent)
-            finish()
+//            finish()
         }
 
 
