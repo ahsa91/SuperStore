@@ -5,7 +5,7 @@
 
     <dimen name="button_background_radius">10dp</dimen>
 
-
+<!--    login and register screen box and button dimentions-->
     <dimen name="auth_header_image_height">200sp</dimen>
     <dimen name="auth_logo_width_size">200sp</dimen>
     <dimen name="auth_logo_height_size">100sp</dimen>
@@ -23,5 +23,12 @@
     <dimen name="txt_terms_condition_marginStart">10dp</dimen>
     <dimen name="txt_terms_and_condition_textSize">14sp</dimen>
     <dimen name="button_paddingTop_Bottom">8dp</dimen>
+
+<!--    progress dialog dimentions-->
+    <dimen name="progress_dialog_content_padding">10dp</dimen>
+    <dimen name="progress_bar_size">50dp</dimen>
+    <dimen name="progress_text_marginStart">16dp</dimen>
+    <dimen name="progress_text_size">16sp</dimen>
+
 
 </resources>
