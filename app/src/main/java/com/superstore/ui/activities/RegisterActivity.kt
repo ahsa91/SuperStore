@@ -142,6 +142,9 @@ class RegisterActivity : BaseActivity() {
                                 "You are registered successfully. Your user id is ${firebaseUser.uid}",
                                 false
                             )
+                            //sign out user from firebase and send him to login screen
+                            FirebaseAuth.getInstance().signOut()
+                            finish()
                         } else {
                             // If the registering is not successful then show error message.
                             showErrorSnackBar(task.exception!!.message.toString(), true)
