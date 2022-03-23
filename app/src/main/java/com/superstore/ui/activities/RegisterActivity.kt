@@ -4,6 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.WindowManager
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.superstore.R
 import kotlinx.android.synthetic.main.activity_register_activity.*
 
@@ -37,7 +41,7 @@ class RegisterActivity : BaseActivity() {
         // when user taps the register button then the validation function is called
         btn_register.setOnClickListener {
 
-            validateRegisterDetails()
+            registerUser()
         }
 
     }
@@ -103,9 +107,39 @@ class RegisterActivity : BaseActivity() {
                 false
             }
             else -> {
-                showErrorSnackBar("Your details are valid.", false)
                 true
             }
+        }
+    }
+
+    private fun registerUser() {
+
+        // Check with validate function if the entries are valid or not.
+        if (validateRegisterDetails()) {
+
+            val email: String = et_email.text.toString().trim { it <= ' ' }
+            val password: String = et_email.text.toString().trim { it <= ' ' }
+
+            // Create an instance and create a register a user with email and password.
+            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(
+                    OnCompleteListener<AuthResult> { task ->
+
+                        // If the registration is successfully done
+                        if (task.isSuccessful) {
+
+                            // Firebase registered user
+                            val firebaseUser: FirebaseUser = task.result!!.user!!
+
+                            showErrorSnackBar(
+                                "You are registered successfully. Your user id is ${firebaseUser.uid}",
+                                false
+                            )
+                        } else {
+                            // If the registering is not successful then show error message.
+                            showErrorSnackBar(task.exception!!.message.toString(), true)
+                        }
+                    })
         }
     }
 }
