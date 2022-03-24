@@ -1,6 +1,5 @@
 package com.superstore.ui.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.WindowManager
@@ -9,44 +8,48 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.superstore.R
-import kotlinx.android.synthetic.main.activity_register_activity.*
+import kotlinx.android.synthetic.main.activity_register.*
 
 //register screen of the app
 @Suppress("DEPRECATION")
 
-//register activity inherits AppCompatActivity() from BaseActivity
 class RegisterActivity : BaseActivity() {
+
+
+    //This function is auto created by Android when the Activity Class is created.
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        //This call the parent constructor
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register_activity)
+        // This is used to align the xml view to this class
+        setContentView(R.layout.activity_register)
 
         // This is used to hide the status bar and make the splash screen as a full screen activity.
         //source https://stackoverflow.com/questions/62835053/how-to-set-fullscreen-in-android-r
+
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
 
-        //calling clickable back action bar
         setupActionBar()
 
-        tv_login.setOnClickListener {
-
-            // Launch the register screen when the user clicks on the text.
-            val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
-        // when user taps the register button then the validation function is called
         btn_register.setOnClickListener {
 
             registerUser()
         }
 
+        // START
+        tv_login.setOnClickListener{
+            // Here when the user click on login text we can either call the login activity or call the onBackPressed function.
+            // We will call the onBackPressed function.
+            onBackPressed()
+        }
     }
 
-    //function for clickable back action bar
+    /**
+     * A function for actionBar Setup.
+     */
     private fun setupActionBar() {
 
         setSupportActionBar(toolbar_register_activity)
@@ -60,7 +63,9 @@ class RegisterActivity : BaseActivity() {
         toolbar_register_activity.setNavigationOnClickListener { onBackPressed() }
     }
 
-    //boolean function for user validation fields
+    /**
+     * A function to validate the entries of a new user.
+     */
     private fun validateRegisterDetails(): Boolean {
         return when {
             TextUtils.isEmpty(et_first_name.text.toString().trim { it <= ' ' }) -> {
@@ -112,25 +117,27 @@ class RegisterActivity : BaseActivity() {
         }
     }
 
+    /**
+     * A function to register the user with email and password using FirebaseAuth.
+     */
     private fun registerUser() {
 
         // Check with validate function if the entries are valid or not.
         if (validateRegisterDetails()) {
 
-            //show progress dialog
+            // Show the progress dialog.
             showProgressDialog(resources.getString(R.string.please_wait))
 
-
             val email: String = et_email.text.toString().trim { it <= ' ' }
-            val password: String = et_email.text.toString().trim { it <= ' ' }
+            val password: String = et_password.text.toString().trim { it <= ' ' }
 
             // Create an instance and create a register a user with email and password.
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(
                     OnCompleteListener<AuthResult> { task ->
-                        //hide progress dialog
-                        hideProgressDialog()
 
+                        // Hide the progress dialog
+                        hideProgressDialog()
 
                         // If the registration is successfully done
                         if (task.isSuccessful) {
@@ -142,8 +149,13 @@ class RegisterActivity : BaseActivity() {
                                 "You are registered successfully. Your user id is ${firebaseUser.uid}",
                                 false
                             )
-                            //sign out user from firebase and send him to login screen
+
+
+                             //Here the new user registered is automatically signed-in so we just sign-out the user from firebase
+                            //and send him to Login Screen.
+
                             FirebaseAuth.getInstance().signOut()
+                            // Finish the Register Screen
                             finish()
                         } else {
                             // If the registering is not successful then show error message.
