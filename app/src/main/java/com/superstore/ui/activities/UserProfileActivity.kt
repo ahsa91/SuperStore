@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.superstore.R
+import com.superstore.firestore.FirestoreClass
 import com.superstore.models.User
 import com.superstore.utils.Constants
 import com.superstore.utils.GlideLoader
@@ -21,29 +22,32 @@ import java.io.IOException
 /*User profile activity where user enters data and uses radio button*/
 @Suppress("DEPRECATION")
 class UserProfileActivity : BaseActivity(), View.OnClickListener  {
+
+    //Retrieve the User details from intent extra
+    // Create a instance of the User model class.
+    var mUserDetails: User = User()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
 
-        //Retrieve the User details from intent extra
-        // Create a instance of the User model class.
-        var userDetails: User = User()
+
         if(intent.hasExtra(Constants.EXTRA_USER_DETAILS)) {
             // Get the user details from intent as a ParcelableExtra.
-            userDetails = intent.getParcelableExtra(Constants.EXTRA_USER_DETAILS)!!
+            mUserDetails = intent.getParcelableExtra(Constants.EXTRA_USER_DETAILS)!!
         }
 
         //After receiving the user details from intent set it to the UI
         // Here, the some of the edittext components are disabled because it is added at a time of Registration.
         //therefore firstname/lastname/and email are non changeable
         et_first_name.isEnabled = false
-        et_first_name.setText(userDetails.firstName)
+        et_first_name.setText(mUserDetails.firstName)
 
         et_last_name.isEnabled = false
-        et_last_name.setText(userDetails.lastName)
+        et_last_name.setText(mUserDetails.lastName)
 
         et_email.isEnabled = false
-        et_email.setText(userDetails.email)
+        et_email.setText(mUserDetails.email)
 
         // Assign the on click event to the user profile photo.
         iv_user_photo.setOnClickListener(this@UserProfileActivity)
@@ -89,7 +93,35 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
                 R.id.btn_save ->{
 
                     if(validateUserProfileDetails()){
-                        showErrorSnackBar("Your details are valid. You can update them.",false)
+                        //create hashmap for userdetails
+                        val userHashMap = HashMap<String, Any>()
+
+                        // Here the field which are not editable needs no update. So, we will update user Mobile Number and Gender for now.
+
+                        // Here we get the text from editText and trim the space
+                        val mobileNumber = et_mobile_number.text.toString().trim { it <= ' ' }
+
+                        val gender = if (rb_male.isChecked) {
+                            Constants.MALE
+                        } else {
+                            Constants.FEMALE
+                        }
+
+                        if (mobileNumber.isNotEmpty()) {
+                            //eg: key: mobile value: 123456788
+                            userHashMap[Constants.MOBILE] = mobileNumber.toLong()
+                        }
+                        //eg: key: Gender value: male
+                        userHashMap[Constants.GENDER] = gender
+
+                        // Show the progress dialog.
+                        showProgressDialog(resources.getString(R.string.please_wait))
+
+                        // call the registerUser function of FireStore class to make an entry in the database.
+                        FirestoreClass().updateUserProfileData(
+                            this@UserProfileActivity,
+                            userHashMap
+                        )
                     }
                 }
 
@@ -190,6 +222,29 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
             }
         }
     }
+
+
+    /**
+     * A function to notify the success result and proceed further accordingly after updating the user details.
+     */
+    fun userProfileUpdateSuccess() {
+
+        // Hide the progress dialog
+        hideProgressDialog()
+
+        Toast.makeText(
+            this@UserProfileActivity,
+            resources.getString(R.string.msg_profile_update_success),
+            Toast.LENGTH_SHORT
+        ).show()
+
+
+        // Redirect to the Main Screen after profile completion.
+        startActivity(Intent(this@UserProfileActivity, MainActivity::class.java))
+        finish()
+    }
+
+
 
 
 }
