@@ -4,8 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,11 +13,12 @@ import androidx.core.content.ContextCompat
 import com.superstore.R
 import com.superstore.models.User
 import com.superstore.utils.Constants
+import com.superstore.utils.GlideLoader
 import kotlinx.android.synthetic.main.activity_user_profile.*
 import java.io.IOException
 
 /*User profile activity where user enters data and uses radio button*/
-
+@Suppress("DEPRECATION")
 class UserProfileActivity : BaseActivity(), View.OnClickListener  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,7 +137,10 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
                         // The uri of selected image from phone storage.
                         val selectedImageFileUri = data.data!!
 
-                        iv_user_photo.setImageURI(Uri.parse(selectedImageFileUri.toString()))
+                        GlideLoader(this@UserProfileActivity).loadUserPicture(
+                            selectedImageFileUri,
+                            iv_user_photo
+                        )
                     } catch (e: IOException) {
                         e.printStackTrace()
                         Toast.makeText(
