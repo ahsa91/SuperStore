@@ -2,7 +2,9 @@ package com.superstore.utils
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.provider.MediaStore
+import android.webkit.MimeTypeMap
 
 /*object file to declare constant info in a single file. Values can be used in the entire application
 * */
@@ -30,6 +32,8 @@ object Constants {
     // Firebase database field names
     const val MOBILE: String = "mobile"
     const val GENDER: String = "gender"
+    //constant variable for userProfile image
+    const val USER_PROFILE_IMAGE:String = "User_Profile_Image"
 
     //request the intent to select the image using the unique code
     // a function for user profile image selection from phone storage
@@ -41,5 +45,23 @@ object Constants {
         )
         // Launches the image selection of phone storage using the constant code.
         activity.startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST_CODE)
+    }
+
+    /*A function to get the image file extension of the selected image.
+    * @param activity Activity reference.
+    * @param uri Image file uri*/
+
+    fun getFileExtension(activity: Activity, uri: Uri?): String? {
+        /*
+         * MimeTypeMap: Two-way map that maps MIME-types to file extensions and vice versa.
+         *
+         * getSingleton(): Get the singleton instance of MimeTypeMap.
+         *
+         * getExtensionFromMimeType: Return the registered extension for the given MIME type.
+         *
+         * contentResolver.getType: Return the MIME type of the given content URL.
+         */
+        return MimeTypeMap.getSingleton()
+            .getExtensionFromMimeType(activity.contentResolver.getType(uri!!))
     }
 }

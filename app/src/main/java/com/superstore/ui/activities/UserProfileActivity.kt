@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -25,7 +26,10 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
 
     //Retrieve the User details from intent extra
     // Create a instance of the User model class.
-    var mUserDetails: User = User()
+    private lateinit var mUserDetails: User
+
+    //a global variable for URI of a selected image from phone storage.
+    private var mSelectedImageFileUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,7 +96,15 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
                 //onclick listner for save button
                 R.id.btn_save ->{
 
-                    if(validateUserProfileDetails()){
+                    // Show the progress dialog.
+                    showProgressDialog(resources.getString(R.string.please_wait))
+
+                    FirestoreClass().uploadImageToCloudStorage(
+                        this@UserProfileActivity,
+                        mSelectedImageFileUri
+                    )
+
+/*                    if(validateUserProfileDetails()){
                         //create hashmap for userdetails
                         val userHashMap = HashMap<String, Any>()
 
@@ -122,7 +134,7 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
                             this@UserProfileActivity,
                             userHashMap
                         )
-                    }
+                    }*/
                 }
 
             }
@@ -180,10 +192,10 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
                 if (data != null) {
                     try {
                         // The uri of selected image from phone storage.
-                        val selectedImageFileUri = data.data!!
+                         mSelectedImageFileUri = data.data!!
 
                         GlideLoader(this@UserProfileActivity).loadUserPicture(
-                            selectedImageFileUri,
+                            mSelectedImageFileUri!!,
                             iv_user_photo
                         )
                     } catch (e: IOException) {
@@ -244,7 +256,20 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
         finish()
     }
 
+    /*
+    * function notifies that a profile uploaded to file storage
+    *  @param imageURL After successful upload the Firebase Cloud returns the URL.*/
+    fun imageUploadSuccess(imageURL: String) {
 
+        // Hide the progress dialog
+        hideProgressDialog()
+
+        Toast.makeText(
+            this@UserProfileActivity,
+            "Your image is uploaded successfully. Image URL is $imageURL",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 
 
 }
