@@ -34,6 +34,13 @@ object Constants {
     const val GENDER: String = "gender"
     //constant variable for userProfile image
     const val USER_PROFILE_IMAGE:String = "User_Profile_Image"
+    //constant variable for profile image
+
+    const val IMAGE: String = "image"
+    //constant database field for completedProfile
+    const val COMPLETE_PROFILE: String = "profileCompleted"
+
+
 
     //request the intent to select the image using the unique code
     // a function for user profile image selection from phone storage

@@ -128,10 +128,6 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         // Hide the progress dialog.
         hideProgressDialog()
 
-        // Print the user details in the log as of now.
-        Log.i("First Name: ", user.firstName)
-        Log.i("Last Name: ", user.lastName)
-        Log.i("Email: ", user.email)
 
         //Redirect the user to the UserProfile screen if it is incomplete otherwise to the Main screen
         if (user.profileCompleted == 0) {

@@ -30,6 +30,9 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
 
     //a global variable for URI of a selected image from phone storage.
     private var mSelectedImageFileUri: Uri? = null
+    //global variable for image url
+    private var mUserProfileImageURL: String = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,46 +98,21 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
                 }
                 //onclick listner for save button
                 R.id.btn_save ->{
-
-                    // Show the progress dialog.
-                    showProgressDialog(resources.getString(R.string.please_wait))
-
-                    FirestoreClass().uploadImageToCloudStorage(
-                        this@UserProfileActivity,
-                        mSelectedImageFileUri
-                    )
-
-/*                    if(validateUserProfileDetails()){
-                        //create hashmap for userdetails
-                        val userHashMap = HashMap<String, Any>()
-
-                        // Here the field which are not editable needs no update. So, we will update user Mobile Number and Gender for now.
-
-                        // Here we get the text from editText and trim the space
-                        val mobileNumber = et_mobile_number.text.toString().trim { it <= ' ' }
-
-                        val gender = if (rb_male.isChecked) {
-                            Constants.MALE
-                        } else {
-                            Constants.FEMALE
-                        }
-
-                        if (mobileNumber.isNotEmpty()) {
-                            //eg: key: mobile value: 123456788
-                            userHashMap[Constants.MOBILE] = mobileNumber.toLong()
-                        }
-                        //eg: key: Gender value: male
-                        userHashMap[Constants.GENDER] = gender
-
+                    if (validateUserProfileDetails()) {
                         // Show the progress dialog.
                         showProgressDialog(resources.getString(R.string.please_wait))
 
-                        // call the registerUser function of FireStore class to make an entry in the database.
-                        FirestoreClass().updateUserProfileData(
-                            this@UserProfileActivity,
-                            userHashMap
-                        )
-                    }*/
+                        if (mSelectedImageFileUri != null) {
+
+                            FirestoreClass().uploadImageToCloudStorage(
+                                this@UserProfileActivity,
+                                mSelectedImageFileUri
+                            )
+                        } else {
+                            //Call the user update details function.
+                            updateUserProfileDetails()
+                        }
+                    }
                 }
 
             }
@@ -261,14 +239,52 @@ class UserProfileActivity : BaseActivity(), View.OnClickListener  {
     *  @param imageURL After successful upload the Firebase Cloud returns the URL.*/
     fun imageUploadSuccess(imageURL: String) {
 
-        // Hide the progress dialog
-        hideProgressDialog()
+        mUserProfileImageURL = imageURL
 
-        Toast.makeText(
-            this@UserProfileActivity,
-            "Your image is uploaded successfully. Image URL is $imageURL",
-            Toast.LENGTH_SHORT
-        ).show()
+        //Call the user update details function.
+        updateUserProfileDetails()
+
+    }
+
+    /*function update user profile details to the firestore*/
+
+    private fun updateUserProfileDetails(){
+            //create hashmap for userdetails
+            val userHashMap = HashMap<String, Any>()
+
+            // Here the field which are not editable needs no update. So, we will update user Mobile Number and Gender for now.
+
+            // Here we get the text from editText and trim the space
+            val mobileNumber = et_mobile_number.text.toString().trim { it <= ' ' }
+
+            val gender = if (rb_male.isChecked) {
+                Constants.MALE
+            } else {
+                Constants.FEMALE
+            }
+            //update profile image field if the image URL is not empty
+            if (mUserProfileImageURL.isNotEmpty()) {
+                userHashMap[Constants.IMAGE] = mUserProfileImageURL
+            }
+
+            if (mobileNumber.isNotEmpty()) {
+                //eg: key: mobile value: 123456788
+                userHashMap[Constants.MOBILE] = mobileNumber.toLong()
+            }
+            //eg: key: Gender value: male
+            userHashMap[Constants.GENDER] = gender
+
+            //user profile is complete:1
+            //user profile incomplete:0
+            userHashMap[Constants.COMPLETE_PROFILE] = 1
+
+
+        // call the registerUser function of FireStore class to make an entry in the database.
+            FirestoreClass().updateUserProfileData(
+                this@UserProfileActivity,
+                userHashMap
+            )
+
     }
 
 

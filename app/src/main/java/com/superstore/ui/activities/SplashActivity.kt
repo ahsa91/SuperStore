@@ -6,6 +6,7 @@ import android.os.Handler
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.superstore.R
+import com.superstore.firestore.FirestoreClass
 
 @Suppress("DEPRECATION")
 class SplashActivity : AppCompatActivity() {
@@ -24,6 +25,11 @@ class SplashActivity : AppCompatActivity() {
         // It is deprecated in the API level 30.
         Handler().postDelayed(
             {
+
+                // Get the current logged in user id
+                //remember me feature
+                val currentUserID = FirestoreClass().getCurrentUserID()
+
 
                 // Launch the Login Activity
                 startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
